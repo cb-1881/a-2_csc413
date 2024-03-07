@@ -1,0 +1,182 @@
+public class Administrator {
+    private String staffId;
+    private String name;
+
+    // Constructor
+    public Administrator(String staffId, String name) {
+        this.staffId = staffId;
+        this.name = name;
+    }
+
+    // Getters and Setters
+    public String getStaffId() {
+        return staffId;
+    }
+
+    public void setStaffId(String staffId) {
+        this.staffId = staffId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+//toString() method
+  
+  
+    @Override
+    public String toString() {
+        return "Administrator{" +
+                "staffId='" + staffId + '\'' +
+                ", name='" + name + '\'' +
+                '}';
+    }
+    
+  // Methods for account and system management
+}
+public class Customer {
+  private String customerId;
+  private String name;
+  private String accountNumber;
+  private double balance;
+
+  // Constructor
+  public Customer(String customerId, String name, String accountNumber, double balance) {
+    this.customerId = customerId;
+    this.name = name;
+    this.accountNumber = accountNumber;
+    this.balance = balance;
+  }
+
+  // Getters and Setters
+  public String getCustomerId() {
+    return customerId;
+  }
+
+  public void setCustomerId(String customerId) {
+    this.customerId = customerId;
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
+  }
+
+  public String getAccountNumber() {
+    return accountNumber;
+  }
+
+  public void setAccountNumber(String accountNumber) {
+    this.accountNumber = accountNumber;
+  }
+
+  public double getBalance() {
+    return balance;
+  }
+
+  public void setBalance(double balance) {
+    this.balance = balance;
+  }
+  // toString method
+  @Override
+  public String toString() {
+      return "Customer{" +
+              "customerId='" + customerId + '\'' +
+              ", name='" + name + '\'' +
+              ", accountNumber='" + accountNumber + '\'' +
+              ", balance=" + balance +
+              '}';
+  }
+
+
+  // Additional methods to manipulate the account
+}
+class LinkedList<E>{
+
+  private Node<E> head;
+
+  // Linked list methods to store Admins and Customers
+  public void add(E data) {
+    Node<E> newNode = new Node<>(data);
+    newNode.next = head;
+    head = newNode;
+  }
+
+  private static class Node<E> {
+    private E data;
+    private Node<E> next;
+
+    public Node(E data) {
+      this.data = data;
+      this.next = null;
+    }
+  }
+
+  // Define a get(int) method inside the LinkedList class
+  public E get(int index) {
+    Node<E> current = head;
+    int count = 0;
+
+    while (current != null) {
+      if (count == index) {
+        return current.data;
+      }
+      count++;
+      current = current.next;
+    }
+
+    // Handle index out of bounds
+    throw new IndexOutOfBoundsException("Index " + index + " out of bounds.");
+  }
+
+  public void printList() {
+    Node<E> iterator = head;
+    while (iterator != null) {
+      System.out.print(iterator.data.toString() + " ");
+      iterator = iterator.next;
+    }
+    System.out.println();
+  }
+}
+import org.junit.Assert;
+import org.junit.Test;
+
+public class ListTest {
+
+  @Test
+  public void testCustomerList() {
+    LinkedList<Customer> customerList = new LinkedList<>();
+    Customer alice = new Customer("1", "Alice", "5678", 2000.0);
+    Customer bob = new Customer("2", "Bob", "9012", 1500.0);
+    Customer carol = new Customer("3", "Carol", "3456", 1800.0);
+//lifo for linked list
+    customerList.add(carol);
+    customerList.add(bob);
+    customerList.add(alice);
+    Assert.assertEquals(alice, customerList.get(0));
+    Assert.assertEquals(bob, customerList.get(1));
+    Assert.assertEquals(carol, customerList.get(2));
+  
+  }
+
+  public static void main(String[] args) {
+    // Run the test
+    org.junit.runner.JUnitCore.main("ListTest");
+    
+    /* 
+    LinkedList<Customer> testtestcustomerList = new LinkedList<>();
+    Customer alice = new Customer("1", "Alice", "5678", 2000.0);
+    Customer bob = new Customer("2", "Bob", "9012", 1500.0);
+    Customer carol = new Customer("3", "Carol", "3456", 1800.0);
+    testtestcustomerList.add(carol);
+    testtestcustomerList.add(bob);
+    testtestcustomerList.printList();
+    */
+  }
+}

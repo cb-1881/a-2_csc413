@@ -1,0 +1,3 @@
+javac -cp dep/junit-4.12.jar:dep/hamcrest-core-1.3.jar:. src/*.java
+
+java -cp dep/junit-4.12.jar:dep/hamcrest-core-1.3.jar:./src ListTest 
