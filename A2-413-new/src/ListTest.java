@@ -23,8 +23,8 @@ public class ListTest {
 
   public static void main(String[] args) {
     // Run the test
-    org.junit.runner.JUnitCore.main("ListTest");
-    
+    //org.junit.runner.JUnitCore.main("ListTest");
+    testPrint();
     /* 
     LinkedList<Customer> testtestcustomerList = new LinkedList<>();
     Customer alice = new Customer("1", "Alice", "5678", 2000.0);
@@ -34,5 +34,19 @@ public class ListTest {
     testtestcustomerList.add(bob);
     testtestcustomerList.printList();
     */
+  }
+
+  public static void testPrint(){
+System.out.println("PRINTING BIZ OBJECTS:\n" );
+    LinkedList<Customer> testtestcustomerList = new LinkedList<>();
+    Customer alice = new Customer("1", "Alice", "5678", 2000.0);
+    Customer bob = new Customer("2", "Bob", "9012", 1500.0);
+    Customer carol = new Customer("3", "Carol", "3456", 1800.0);
+    testtestcustomerList.add(carol);
+    testtestcustomerList.add(bob);
+    testtestcustomerList.add(alice);
+    testtestcustomerList.printList();
+
+
   }
 }

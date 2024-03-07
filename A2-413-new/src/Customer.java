@@ -47,12 +47,12 @@ public class Customer {
   // toString method
   @Override
   public String toString() {
-      return "Customer{" +
+      return " Customer  {" +
               "customerId='" + customerId + '\'' +
               ", name='" + name + '\'' +
               ", accountNumber='" + accountNumber + '\'' +
               ", balance=" + balance +
-              '}';
+              '}' + "\n" ;
   }
 
 
