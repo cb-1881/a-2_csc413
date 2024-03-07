@@ -37,16 +37,21 @@ public class ListTest {
   }
 
   public static void testPrint(){
-System.out.println("PRINTING BIZ OBJECTS:\n" );
+
     LinkedList<Customer> testtestcustomerList = new LinkedList<>();
     Customer alice = new Customer("1", "Alice", "5678", 2000.0);
     Customer bob = new Customer("2", "Bob", "9012", 1500.0);
     Customer carol = new Customer("3", "Carol", "3456", 1800.0);
     testtestcustomerList.add(carol);
     testtestcustomerList.add(bob);
-    testtestcustomerList.add(alice);
     testtestcustomerList.printList();
 
+    LinkedList<Administrator> admintest = new LinkedList<>();
+    Administrator dave = new Administrator("913456", "dave");
+    admintest.add(dave);
+    admintest.printList();
+      
+//    );
 
   }
 }
