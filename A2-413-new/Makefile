@@ -8,6 +8,8 @@ CLASSPATH := $(JUNIT_JAR):$(HAMCREST_JAR):$(SQL_JAR):./src
 SRC_DIR := src
 TEST_CLASS := ListTest
 SQL_class := test_sql
+
+
 # Default target
 all: compile run
 

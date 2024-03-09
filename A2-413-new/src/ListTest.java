@@ -23,7 +23,7 @@ public class ListTest {
 
   public static void main(String[] args) {
     // Run the test
-    //org.junit.runner.JUnitCore.main("ListTest");
+    org.junit.runner.JUnitCore.main("ListTest");
     testPrint();
     /* 
     LinkedList<Customer> testtestcustomerList = new LinkedList<>();
