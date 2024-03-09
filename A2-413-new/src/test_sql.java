@@ -4,10 +4,14 @@ import java.sql.SQLException;
 
 public class test_sql {
     public static void main(String[] args) {
-        // Database URL, username and password
-        String url = "jdbc:mysql://localhost:3306/yourdatabase";
-        String user = "yourusername";
-        String password = "yourpassword";
+        testConnection();
+    }
+
+    public static void testConnection(){
+// Database URL, username and password
+        String url = "jdbc:mysql://localhost:3306/mydatabase";
+        String user = "bankapp";
+        String password = "password";
 
         // Load and register the JDBC driver
         try {
@@ -29,5 +33,6 @@ public class test_sql {
             System.out.println("SQL Exception: " + e.getMessage());
             e.printStackTrace();
         }
+
     }
 }

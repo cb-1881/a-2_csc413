@@ -4,6 +4,10 @@ public class Customer {
   private String accountNumber;
   private double balance;
 
+
+  public Customer() {
+    // Constructor body can be empty
+}
   // Constructor
   public Customer(String customerId, String name, String accountNumber, double balance) {
     this.customerId = customerId;

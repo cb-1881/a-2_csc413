@@ -4,11 +4,15 @@
 JUNIT_JAR := dep/junit-4.12.jar
 HAMCREST_JAR := dep/hamcrest-core-1.3.jar
 SQL_JAR := dep/mysql-connector-j-8.3.0.jar
-CLASSPATH := $(JUNIT_JAR):$(HAMCREST_JAR):$(SQL_JAR):./src
+JAVAX_JAR:= dep/javax.json-api-1.1.4.jar
+JACKSONCORE_JAR:= dep/jackson-core-2.16.1.jar
+JACKSONDATABIND_JAR:= dep/jackson-databind-2.16.1.jar
+JACKSONANNOTATIONS_JAR := dep/jackson-annotations-2.16.1.jar
+CLASSPATH := $(JUNIT_JAR):$(HAMCREST_JAR):$(SQL_JAR):$(JAVAX_JAR):$(JACKSONCORE_JAR):$(JACKSONDATABIND_JAR):$(JACKSONANNOTATIONS_JAR):src
 SRC_DIR := src
 TEST_CLASS := ListTest
 SQL_class := test_sql
-
+JSON_class:= JSONDemo
 
 # Default target
 all: compile run
@@ -24,6 +28,9 @@ run:
 sql:
 	java -cp $(CLASSPATH) $(SQL_class)
 
+# Run JSONDemo class
+json:
+	java -cp $(CLASSPATH) $(JSON_class)
 # Clean the class files
 clean:
 	rm -rf src/*.class
