@@ -14,6 +14,8 @@ TEST_CLASS := ListTest
 SQL_class := test_sql
 JSON_class:= JSONDemo
 QueueTest_class := PriorQueueTest
+TellerTest_class := TellerTest
+SecurityTest_class := SecurityTest
 # Default target
 all: compile run
 
@@ -24,6 +26,12 @@ compile:
 # Run the test class
 run:
 	java -cp $(CLASSPATH) $(QueueTest_class)
+
+tests:
+	javac -cp dep/junit-4.12.jar:dep/hamcrest-core-1.3.jar: src/Teller.java src/TellerTest.java src/Security.java src/SecurityTest.java
+	java -cp dep/junit-4.12.jar:dep/hamcrest-core-1.3.jar:dep/mysql-connector-j-8.3.0.jar:dep/javax.json-api-1.1.4.jar:dep/jackson-core-2.16.1.jar:dep/jackson-databind-2.16.1.jar:dep/jackson-annotations-2.16.1.jar:src TellerTest
+ 
+
 
 sql:
 	java -cp $(CLASSPATH) $(SQL_class)
