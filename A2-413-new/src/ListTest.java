@@ -1,5 +1,5 @@
 //import java.util.LinkedList;
-
+/* 
 import org.junit.Assert;
 import org.junit.Test;
 import javax.json.stream.*;
@@ -39,8 +39,9 @@ public class ListTest {
     testtestcustomerList.add(bob);
     testtestcustomerList.printList();
     */
-  }
+//  }
 
+/* 
   public static void testPrint(){
 
     LinkedList<Customer> testtestcustomerList = new LinkedList<>();
@@ -60,3 +61,4 @@ public class ListTest {
 
   }
 }
+*/

@@ -1,10 +1,35 @@
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.sql.ResultSet;
+import java.sql.Statement;
 
 public class test_sql {
     public static void main(String[] args) {
         testConnection();
+        showDatabaseContents();
+    }
+
+    public static void showDatabaseContents() {
+        // Connection URL syntax: "jdbc:sqlserver://[serverName[\instanceName][:portNumber]][;property=value[;property=value]]"
+        String connectionUrl = "jdbc:mysql://localhost:3306/mydatabase?user=bankapp&password=password";
+        //"jdbc:mysql://localhost:3306/mydatabase?user=bankapp&password=password";
+        // SQL query to retrieve data
+        String SQL = "SELECT * FROM Employee";
+        
+        // Try-with-resources to ensure closing resources
+        try (Connection conn = DriverManager.getConnection(connectionUrl);
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(SQL)) {
+
+            System.out.println("ID | Name | Position");
+            while (rs.next()) {
+                // Assuming columns are id (int), name (String), position (String)
+                System.out.println(rs.getInt("id") + " | " + rs.getString("name") + " | " + rs.getString("position"));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public static void testConnection(){

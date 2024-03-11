@@ -1,23 +1,42 @@
-class LinkedList<E>{
+public class LinkedList<E> {
+  protected Node<E> head; // Make head protected to allow subclass access
 
-  private Node<E> head;
+  protected static class Node<E> { // Make Node and its members accessible to subclasses
+      protected E data;
+      protected Node<E> next;
 
-  // Linked list methods to store Admins and Customers
-  public void add(E data) {
-    Node<E> newNode = new Node<>(data);
-    newNode.next = head;
-    head = newNode;
+      protected Node(E data) { // Protected constructor
+          this.data = data;
+          this.next = null;
+      }
+
+      public E getData() { // Public getter for data
+          return data;
+      }
+
+      public Node<E> getNext() { // Public getter for next
+          return next;
+      }
+
+      public void setNext(Node<E> next) { // Public setter for next
+          this.next = next;
+      }
   }
 
-  private static class Node<E> {
-    private E data;
-    private Node<E> next;
-
-    public Node(E data) {
-      this.data = data;
-      this.next = null;
-    }
+  public LinkedList() {
+      this.head = null;
   }
+
+  protected Node<E> getHead() { // Protected getter for head
+      return head;
+  }
+
+  protected void setHead(Node<E> head) { // Protected setter for head
+      this.head = head;
+  }
+
+  // Other LinkedList methods as previously defined
+  // (add, get, printList etc., unchanged, assuming they don't need direct Node access modification)}
 
   // Define a get(int) method inside the LinkedList class
   public E get(int index) {

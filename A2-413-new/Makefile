@@ -13,7 +13,7 @@ SRC_DIR := src
 TEST_CLASS := ListTest
 SQL_class := test_sql
 JSON_class:= JSONDemo
-
+QueueTest_class := PriorQueueTest
 # Default target
 all: compile run
 
@@ -23,7 +23,7 @@ compile:
 
 # Run the test class
 run:
-	java -cp $(CLASSPATH) $(TEST_CLASS)
+	java -cp $(CLASSPATH) $(QueueTest_class)
 
 sql:
 	java -cp $(CLASSPATH) $(SQL_class)
@@ -31,6 +31,10 @@ sql:
 # Run JSONDemo class
 json:
 	java -cp $(CLASSPATH) $(JSON_class)
+
+# Run que test class
+queue:
+	java -cp $(CLASSPATH) $(QueueTest_class)
 # Clean the class files
 clean:
 	rm -rf src/*.class

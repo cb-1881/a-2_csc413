@@ -1,4 +1,4 @@
-public class Customer {
+public class Customer implements Comparable<Customer>{
   private String customerId;
   private String name;
   private String accountNumber;
@@ -14,6 +14,12 @@ public class Customer {
     this.name = name;
     this.accountNumber = accountNumber;
     this.balance = balance;
+  }
+
+
+  @Override
+  public int compareTo(Customer other) {
+      return Double.compare(other.balance, this.balance);
   }
 
   // Getters and Setters
