@@ -1,0 +1,699 @@
+import java.util.List;
+
+
+public interface AccountDAOInterface {
+    void addAccount(Account account);
+    Account getAccount(String accountNumber);
+    void updateAccount(Account account);
+    void deleteAccount(String accountNumber);
+    List<Account> getAllAccounts();
+}import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
+public class AccountDAO implements AccountDAOInterface {
+
+    private String jdbcURL = "jdbc:mysql://localhost:3306/mydatabase";
+    private String jdbcUsername = "bankapp";
+    private String jdbcPassword = "password";
+
+    private static final String INSERT_ACCOUNTS_SQL = "INSERT INTO accounts (accountNumber, balance, customerId) VALUES (?, ?, ?);";
+    private static final String SELECT_ACCOUNT_BY_ID = "SELECT accountNumber, balance, customerId FROM accounts WHERE accountNumber =?";
+    private static final String SELECT_ALL_ACCOUNTS = "SELECT * FROM accounts";
+    private static final String DELETE_ACCOUNTS_SQL = "DELETE FROM accounts WHERE accountNumber = ?;";
+    private static final String UPDATE_ACCOUNTS_SQL = "UPDATE accounts SET balance = ?, customerId = ? WHERE accountNumber = ?;";
+
+    protected Connection getConnection() {
+        Connection connection = null;
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            connection = DriverManager.getConnection(jdbcURL, jdbcUsername, jdbcPassword);
+        } catch (SQLException e) {
+            // Handle SQL exception
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            // Handle class not found exception
+            e.printStackTrace();
+        }
+        return connection;
+    }
+
+    @Override
+    public void addAccount(Account account) {
+        try (Connection connection = getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(INSERT_ACCOUNTS_SQL)) {
+            preparedStatement.setString(1, account.getAccountNumber());
+            preparedStatement.setDouble(2, account.getBalance());
+            preparedStatement.setString(3, account.getCustomerId());
+            preparedStatement.executeUpdate();
+        } catch (Exception e) {
+            // Handle exceptions
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public Account getAccount(String accountNumber) {
+        Account account = null;
+        try (Connection connection = getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(SELECT_ACCOUNT_BY_ID)) {
+            preparedStatement.setString(1, accountNumber);
+            ResultSet rs = preparedStatement.executeQuery();
+
+            while (rs.next()) {
+                String accNumber = rs.getString("accountNumber");
+                double balance = rs.getDouble("balance");
+                String customerId = rs.getString("customerId");
+                account = new Account(accNumber, balance, customerId);
+            }
+        } catch (SQLException e) {
+            // Handle exceptions
+            e.printStackTrace();
+        }
+        return account;
+    }
+
+    @Override
+    public void updateAccount(Account account) {
+        try (Connection connection = getConnection(); PreparedStatement statement = connection.prepareStatement(UPDATE_ACCOUNTS_SQL)) {
+            statement.setDouble(1, account.getBalance());
+            statement.setString(2, account.getCustomerId());
+            statement.setString(3, account.getAccountNumber());
+            statement.executeUpdate();
+        } catch (Exception e) {
+            // Handle exceptions
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void deleteAccount(String accountNumber) {
+        try (Connection connection = getConnection(); PreparedStatement statement = connection.prepareStatement(DELETE_ACCOUNTS_SQL)) {
+            statement.setString(1, accountNumber);
+            statement.executeUpdate();
+        } catch (Exception e) {
+            // Handle exceptions
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public List<Account> getAllAccounts() {
+        List<Account> accounts = new ArrayList<>();
+        try (Connection connection = getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(SELECT_ALL_ACCOUNTS)) {
+            ResultSet rs = preparedStatement.executeQuery();
+
+            while (rs.next()) {
+                String accountNumber = rs.getString("accountNumber");
+                double balance = rs.getDouble("balance");
+                String customerId = rs.getString("customerId");
+                accounts.add(new Account(accountNumber, balance, customerId));
+            }
+        } catch (SQLException e) {
+            // Handle exceptions
+            e.printStackTrace();
+        }
+        return accounts;
+    }
+}
+public class Account implements Comparable<Account>{
+    private String accountNumber;
+    private double balance;
+    private String customerId;
+
+    // Constructor
+    public Account(String accountNumber, double balance, String customerId) {
+        this.accountNumber = accountNumber;
+        this.balance = balance;
+        this.customerId = customerId;
+    }
+
+    // Getters
+    public String getAccountNumber() {
+                return accountNumber;
+    }
+
+    public double getBalance() {
+        return balance;
+    }
+
+    public String getCustomerId() {
+        return customerId;
+    }
+
+    // Setters
+    public void setAccountNumber(String accountNumber) {
+        this.accountNumber = accountNumber;
+    }
+
+    public void setBalance(double balance) {
+        this.balance = balance;
+    }
+
+    public void setCustomerId(String customerId) {
+        this.customerId = customerId;
+    }
+
+    @Override
+    public int compareTo(Account arg0) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'compareTo'");
+    }
+
+    // Additional functionality methods can be added here.
+    // Example: deposit, withdraw, etc.
+}
+ 
+    
+
+public class Administrator implements Comparable<Administrator>{
+    private String staffId;
+    private String name;
+
+    // Constructor
+    public Administrator(String staffId, String name) {
+        this.staffId = staffId;
+        this.name = name;
+    }
+
+    // Getters and Setters
+    public String getStaffId() {
+        return staffId;
+    }
+
+    public void setStaffId(String staffId) {
+        this.staffId = staffId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+//toString() method
+  
+  
+    @Override
+    public String toString() {
+        return "Administrator{" +
+                "staffId='" + staffId + '\'' +
+                ", name='" + name + '\'' +
+                '}';
+    }
+
+    @Override
+    public int compareTo(Administrator arg0) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'compareTo'");
+    }
+    
+  // Methods for account and system management
+}
+public class Customer implements Comparable<Customer>{
+  private String customerId;
+  private String name;
+  private String accountNumber;
+  private double balance;
+
+
+  public Customer() {
+    // Constructor body can be empty
+}
+  // Constructor
+  public Customer(String customerId, String name, String accountNumber, double balance) {
+    this.customerId = customerId;
+    this.name = name;
+    this.accountNumber = accountNumber;
+    this.balance = balance;
+  }
+
+
+  @Override
+  public int compareTo(Customer other) {
+      return Double.compare(other.balance, this.balance);
+  }
+
+  // Getters and Setters
+  public String getCustomerId() {
+    return customerId;
+  }
+
+  public void setCustomerId(String customerId) {
+    this.customerId = customerId;
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
+  }
+
+  public String getAccountNumber() {
+    return accountNumber;
+  }
+
+  public void setAccountNumber(String accountNumber) {
+    this.accountNumber = accountNumber;
+  }
+
+  public double getBalance() {
+    return balance;
+  }
+
+  public void setBalance(double balance) {
+    this.balance = balance;
+  }
+  // toString method
+  @Override
+  public String toString() {
+      return " Customer  {" +
+              "customerId='" + customerId + '\'' +
+              ", name='" + name + '\'' +
+              ", accountNumber='" + accountNumber + '\'' +
+              ", balance=" + balance +
+              '}' + "\n" ;
+  }
+
+
+  // Additional methods to manipulate the account
+}
+public class LinkedList<E> {
+  protected Node<E> head; // Make head protected to allow subclass access
+
+  protected static class Node<E> { // Make Node and its members accessible to subclasses
+      protected E data;
+      protected Node<E> next;
+
+      protected Node(E data) { // Protected constructor
+          this.data = data;
+          this.next = null;
+      }
+
+      public E getData() { // Public getter for data
+          return data;
+      }
+
+      public Node<E> getNext() { // Public getter for next
+          return next;
+      }
+
+      public void setNext(Node<E> next) { // Public setter for next
+          this.next = next;
+      }
+  }
+
+  public LinkedList() {
+      this.head = null;
+  }
+
+  protected Node<E> getHead() { // Protected getter for head
+      return head;
+  }
+
+  protected void setHead(Node<E> head) { // Protected setter for head
+      this.head = head;
+  }
+
+  // Other LinkedList methods as previously defined
+  // (add, get, printList etc., unchanged, assuming they don't need direct Node access modification)}
+
+  // Define a get(int) method inside the LinkedList class
+  public E get(int index) {
+    Node<E> current = head;
+    int count = 0;
+
+    while (current != null) {
+      if (count == index) {
+        return current.data;
+      }
+      count++;
+      current = current.next;
+    }
+
+    // Handle index out of bounds
+    throw new IndexOutOfBoundsException("Index " + index + " out of bounds.");
+  }
+
+  public void printList() {
+    Node<E> iterator = head;
+    while (iterator != null) {
+      System.out.print(iterator.data.toString() + " ");
+      iterator = iterator.next;
+    }
+    System.out.println();
+  }
+}
+public class LinkedPriorityQueue<E extends Comparable<E>> extends LinkedList<E> implements PriorityQueueInterface<E> {
+    @Override
+    public void add(E data) {
+        if (getHead() == null || getHead().getData().compareTo(data) > 0) {
+            Node<E> newNode = new Node<>(data);
+            newNode.setNext(getHead());
+            setHead(newNode);
+        } else {
+            Node<E> current = getHead();
+            while (current.getNext() != null && current.getNext().getData().compareTo(data) < 0) {
+                current = current.getNext();
+            }
+
+            Node<E> newNode = new Node<>(data);
+            newNode.setNext(current.getNext());
+            current.setNext(newNode);
+        }
+    }
+
+    @Override
+    public E peek() {
+        if (getHead() == null) return null;
+        return getHead().getData();
+    }
+
+    @Override
+    public E poll() {
+        if (getHead() == null) return null;
+        E data = getHead().getData();
+        setHead(getHead().getNext());
+        return data;
+    }
+
+    // The get(int index) and printList() methods are inherited from LinkedList and remain unchanged.
+}
+public interface PriorityQueueInterface<E> {
+    // Inserts the specified element into this priority queue.
+    void add(E e);
+
+    // Retrieves, but does not remove, the head of this queue, or returns null if this queue is empty.
+    E peek();
+
+    // Retrieves and removes the head of this queue, or returns null if this queue is empty.
+    E poll();
+
+    // Returns the element at the specified position in this list.
+    E get(int index);
+
+    // Prints all elements in this list to the console.
+    void printList();
+}
+    public class PriorQueueTest {
+        public static void main(String[] args) {
+            LinkedPriorityQueue<Customer> queue = new LinkedPriorityQueue<>();
+            LinkedPriorityQueue<Administrator> queueAdmin = new LinkedPriorityQueue<>();
+            // Adding customers to the queue
+            queue.add(new Customer("C001", "Alice", "ACC123", 1500.00));
+            queue.add(new Customer("C002", "Bob", "ACC456", 1200.00));
+            queue.add(new Customer("C003", "Charlie", "ACC789", 1800.00));
+            queue.add(new Customer("C004", "Dana", "ACC101", 1300.00));
+            //adding admin to the queue
+            queueAdmin.add(new Administrator("999999", "ben"));
+            // Printing all customers in priority order
+            System.out.println("All customers in priority queue:");
+            queue.printList();
+            System.out.println("admin info:\n");
+            queueAdmin.printList();
+
+
+
+            
+            // Peeking at the customer with the highest priority
+            System.out.println("\nCustomer with highest priority (peek): " + queue.peek());
+    
+            // Polling customers (retrieving and removing)
+            System.out.println("\nPolling customers:");
+            Customer polledCustomer;
+            while ((polledCustomer = queue.poll()) != null) {
+                System.out.println(polledCustomer);
+            }
+    
+            // Trying to peek and poll from an empty queue
+            System.out.println("\nPeeking after all customers have been polled: " + queue.peek());
+            System.out.println("Polling from empty queue: " + queue.poll());
+        }
+    
+    
+    
+}
+public class Security implements Comparable<Security>{
+    private String securityId;
+    private String name;
+    private String level; //  represent clearance level for other accounts
+
+    // Constructors
+    public Security() {
+
+    }
+
+    public Security(String securityId, String name, String level) {
+        this.securityId = securityId;
+        this.name = name;
+        this.level = level;
+    }
+
+    // Getters and setters
+    public String getSecurityId() {
+        return securityId;
+    }
+
+    public void setSecurityId(String securityId) {
+        this.securityId = securityId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getLevel() {
+        return level;
+    }
+
+    public void setLevel(String level) {
+        this.level = level;
+    }
+
+    @Override
+    public int compareTo(Security arg0) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'compareTo'");
+    }
+}
+
+public class Teller implements Comparable<Teller>{
+    private String tellerId;
+    private String name;
+    private String branchId;
+
+    // Constructors
+    public Teller() {
+        
+    }
+
+    public Teller(String tellerId, String name, String branchId) {
+        this.tellerId = tellerId;
+        this.name = name;
+        this.branchId = branchId;
+    }
+
+    // Getters and setters
+    public String getTellerId() {
+        return tellerId;
+    }
+
+    public void setTellerId(String tellerId) {
+        this.tellerId = tellerId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getBranchId() {
+        return branchId;
+    }
+
+    public void setBranchId(String branchId) {
+        this.branchId = branchId;
+    }
+
+    @Override
+    public int compareTo(Teller arg0) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'compareTo'");
+    }
+}
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.ResultSet;
+import java.sql.Statement;
+
+public class test_sql {
+    public static void main(String[] args) {
+        testConnection();
+        getDBInfo();
+        //showDatabaseContents();
+    }
+
+    public static void showDatabaseContents() {
+        // Connection URL syntax: "jdbc:sqlserver://[serverName[\instanceName][:portNumber]][;property=value[;property=value]]"
+        String connectionUrl = "jdbc:mysql://localhost:3306/mydatabase?user=bankapp&password=password";
+        //"jdbc:mysql://localhost:3306/mydatabase?user=bankapp&password=password";
+        // SQL query to retrieve data
+        String SQL = "SELECT * FROM Employee";
+        
+        // Try-with-resources to ensure closing resources
+        try (Connection conn = DriverManager.getConnection(connectionUrl);
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(SQL)) {
+
+            System.out.println("ID | Name | Position");
+            while (rs.next()) {
+                // Assuming columns are id (int), name (String), position (String)
+                System.out.println(rs.getInt("id") + " | " + rs.getString("name") + " | " + rs.getString("position"));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void testConnection(){
+// Database URL, username and password
+        String url = "jdbc:mysql://localhost:3306/mydatabase";
+        String user = "bankapp";
+        String password = "password";
+
+        // Load and register the JDBC driver
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+        } catch (ClassNotFoundException e) {
+            System.out.println("MySQL JDBC driver not found.");
+            e.printStackTrace();
+            return;
+        }
+
+        // Attempt to connect to the database
+        try (Connection conn = DriverManager.getConnection(url, user, password)) {
+            if (conn != null) {
+                System.out.println("Connected to the database successfully!");
+            } else {
+                System.out.println("Failed to make connection!");
+            }
+        } catch (SQLException e) {
+            System.out.println("SQL Exception: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+    }
+    
+
+        public static void getDBInfo() {
+            String url = "jdbc:mysql://localhost:3306/?useSSL=false"; // Adjust the URL to your database server
+            String user = "bankapp"; // Your database username
+            String password = "password"; // Your database password
+    
+            try {
+                // Establish connection to the database
+                Connection conn = DriverManager.getConnection(url, user, password);
+    
+                // Create a statement
+                Statement stmt = conn.createStatement();
+    
+                // Execute SQL command
+                String sql = "SHOW DATABASES";
+                ResultSet rs = stmt.executeQuery(sql);
+    
+                // Process the result set
+                while (rs.next()) {
+                    String databaseName = rs.getString("Database");
+                    System.out.println(databaseName);
+                }
+    
+                // Close the resources
+                rs.close();
+                stmt.close();
+                conn.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    
+     
+
+    
+}
+import java.util.Date;
+
+public class Transaction {
+    private String transactionId;
+    private String accountNumber;
+    private String transactionType; // e.g., "DEPOSIT", "WITHDRAWAL"
+    private double amount;
+    private Date timestamp;
+
+    // Constructor
+    public Transaction(String transactionId, String accountNumber, String transactionType, double amount, Date timestamp) {
+        this.transactionId = transactionId;
+        this.accountNumber = accountNumber;
+        this.transactionType = transactionType;
+        this.amount = amount;
+        this.timestamp = timestamp;
+    }
+
+    // Getters
+    public String getTransactionId() {
+        return transactionId;
+    }
+
+    public String getAccountNumber() {
+        return accountNumber;
+    }
+
+    public String getTransactionType() {
+        return transactionType;
+    }
+
+    public double getAmount() {
+        return amount;
+    }
+
+    public Date getTimestamp() {
+        return timestamp;
+    }
+
+    // Setters
+    public void setTransactionId(String transactionId) {
+        this.transactionId = transactionId;
+    }
+
+    public void setAccountNumber(String accountNumber) {
+        this.accountNumber = accountNumber;
+    }
+
+    public void setTransactionType(String transactionType) {
+        this.transactionType = transactionType;
+    }
+
+    public void setAmount(double amount) {
+        this.amount = amount;
+    }
+
+    public void setTimestamp(Date timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    // Additional functionality methods can be added here.
+    // Example: processTransaction, validateTransaction, etc.
+}

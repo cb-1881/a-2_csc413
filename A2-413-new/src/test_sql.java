@@ -7,7 +7,8 @@ import java.sql.Statement;
 public class test_sql {
     public static void main(String[] args) {
         testConnection();
-        showDatabaseContents();
+        getDBInfo();
+        //showDatabaseContents();
     }
 
     public static void showDatabaseContents() {
@@ -60,4 +61,40 @@ public class test_sql {
         }
 
     }
+    
+
+        public static void getDBInfo() {
+            String url = "jdbc:mysql://localhost:3306/?useSSL=false"; // Adjust the URL to your database server
+            String user = "bankapp"; // Your database username
+            String password = "password"; // Your database password
+    
+            try {
+                // Establish connection to the database
+                Connection conn = DriverManager.getConnection(url, user, password);
+    
+                // Create a statement
+                Statement stmt = conn.createStatement();
+    
+                // Execute SQL command
+                String sql = "SHOW DATABASES";
+                ResultSet rs = stmt.executeQuery(sql);
+    
+                // Process the result set
+                while (rs.next()) {
+                    String databaseName = rs.getString("Database");
+                    System.out.println(databaseName);
+                }
+    
+                // Close the resources
+                rs.close();
+                stmt.close();
+                conn.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    
+     
+
+    
 }

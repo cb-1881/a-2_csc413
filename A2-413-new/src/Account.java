@@ -1,4 +1,4 @@
-public class Account {
+public class Account implements Comparable<Account>{
     private String accountNumber;
     private double balance;
     private String customerId;
@@ -34,6 +34,12 @@ public class Account {
 
     public void setCustomerId(String customerId) {
         this.customerId = customerId;
+    }
+
+    @Override
+    public int compareTo(Account arg0) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'compareTo'");
     }
 
     // Additional functionality methods can be added here.

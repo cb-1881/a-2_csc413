@@ -1,17 +1,23 @@
     public class PriorQueueTest {
         public static void main(String[] args) {
             LinkedPriorityQueue<Customer> queue = new LinkedPriorityQueue<>();
-    
+            LinkedPriorityQueue<Administrator> queueAdmin = new LinkedPriorityQueue<>();
             // Adding customers to the queue
             queue.add(new Customer("C001", "Alice", "ACC123", 1500.00));
             queue.add(new Customer("C002", "Bob", "ACC456", 1200.00));
             queue.add(new Customer("C003", "Charlie", "ACC789", 1800.00));
             queue.add(new Customer("C004", "Dana", "ACC101", 1300.00));
-    
+            //adding admin to the queue
+            queueAdmin.add(new Administrator("999999", "ben"));
             // Printing all customers in priority order
             System.out.println("All customers in priority queue:");
             queue.printList();
-    
+            System.out.println("admin info:\n");
+            queueAdmin.printList();
+
+
+
+            
             // Peeking at the customer with the highest priority
             System.out.println("\nCustomer with highest priority (peek): " + queue.peek());
     

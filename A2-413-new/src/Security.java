@@ -1,4 +1,4 @@
-public class Security {
+public class Security implements Comparable<Security>{
     private String securityId;
     private String name;
     private String level; //  represent clearance level for other accounts
@@ -37,6 +37,12 @@ public class Security {
 
     public void setLevel(String level) {
         this.level = level;
+    }
+
+    @Override
+    public int compareTo(Security arg0) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'compareTo'");
     }
 }
 

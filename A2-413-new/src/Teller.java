@@ -1,4 +1,4 @@
-public class Teller {
+public class Teller implements Comparable<Teller>{
     private String tellerId;
     private String name;
     private String branchId;
@@ -37,6 +37,12 @@ public class Teller {
 
     public void setBranchId(String branchId) {
         this.branchId = branchId;
+    }
+
+    @Override
+    public int compareTo(Teller arg0) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'compareTo'");
     }
 }
 

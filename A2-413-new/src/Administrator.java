@@ -1,4 +1,4 @@
-public class Administrator {
+public class Administrator implements Comparable<Administrator>{
     private String staffId;
     private String name;
 
@@ -33,6 +33,12 @@ public class Administrator {
                 "staffId='" + staffId + '\'' +
                 ", name='" + name + '\'' +
                 '}';
+    }
+
+    @Override
+    public int compareTo(Administrator arg0) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'compareTo'");
     }
     
   // Methods for account and system management
