@@ -1,0 +1,1330 @@
+import java.util.List;
+
+
+public interface AccountDAOInterface {
+    void addAccount(Account account);
+    Account getAccount(String accountNumber);
+    void updateAccount(Account account);
+    void deleteAccount(String accountNumber);
+    List<Account> getAllAccounts();
+}import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
+public class AccountDAO implements AccountDAOInterface {
+
+  
+   //not used
+    private static final String INSERT_ACCOUNTS_SQL = "INSERT INTO accounts (accountNumber, balance, customerId) VALUES (?, ?, ?);";
+    private static final String SELECT_ACCOUNT_BY_ID = "SELECT accountNumber, balance, customerId FROM accounts WHERE accountNumber =?";
+    private static final String SELECT_ALL_ACCOUNTS = "SELECT * FROM accounts";
+    private static final String DELETE_ACCOUNTS_SQL = "DELETE FROM accounts WHERE accountNumber = ?;";
+    private static final String UPDATE_ACCOUNTS_SQL = "UPDATE accounts SET balance = ?, customerId = ? WHERE accountNumber = ?;";
+
+    private Connection getConnection() throws SQLException {
+        // Replace these with your actual database connection details
+        String url = "jdbc:mysql://localhost:3306/mydatabase";
+        String user = "bankapp";
+        String password = "password";
+        return DriverManager.getConnection(url, user, password);
+    }
+
+    @Override
+    public void addAccount(Account account) {
+        try (Connection connection = getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(INSERT_ACCOUNTS_SQL)) {
+            preparedStatement.setString(1, account.getAccountNumber());
+            preparedStatement.setDouble(2, account.getBalance());
+            preparedStatement.setString(3, account.getCustomerId());
+            preparedStatement.executeUpdate();
+        } catch (Exception e) {
+            // Handle exceptions
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public Account getAccount(String accountNumber) {
+        Account account = null;
+        try (Connection connection = getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(SELECT_ACCOUNT_BY_ID)) {
+            preparedStatement.setString(1, accountNumber);
+            ResultSet rs = preparedStatement.executeQuery();
+
+            while (rs.next()) {
+                String accNumber = rs.getString("accountNumber");
+                double balance = rs.getDouble("balance");
+                String customerId = rs.getString("customerId");
+                account = new Account(accNumber, balance, customerId);
+            }
+        } catch (SQLException e) {
+            // Handle exceptions
+            e.printStackTrace();
+        }
+        return account;
+    }
+
+    @Override
+    public void updateAccount(Account account) {
+        try (Connection connection = getConnection(); PreparedStatement statement = connection.prepareStatement(UPDATE_ACCOUNTS_SQL)) {
+            statement.setDouble(1, account.getBalance());
+            statement.setString(2, account.getCustomerId());
+            statement.setString(3, account.getAccountNumber());
+            statement.executeUpdate();
+        } catch (Exception e) {
+            // Handle exceptions
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void deleteAccount(String accountNumber) {
+        try (Connection connection = getConnection(); PreparedStatement statement = connection.prepareStatement(DELETE_ACCOUNTS_SQL)) {
+            statement.setString(1, accountNumber);
+            statement.executeUpdate();
+        } catch (Exception e) {
+            // Handle exceptions
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public List<Account> getAllAccounts() {
+        List<Account> accounts = new ArrayList<>();
+        try (Connection connection = getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(SELECT_ALL_ACCOUNTS)) {
+            ResultSet rs = preparedStatement.executeQuery();
+
+            while (rs.next()) {
+                String accountNumber = rs.getString("accountNumber");
+                double balance = rs.getDouble("balance");
+                String customerId = rs.getString("customerId");
+                accounts.add(new Account(accountNumber, balance, customerId));
+            }
+        } catch (SQLException e) {
+            // Handle exceptions
+            e.printStackTrace();
+        }
+        return accounts;
+    }
+}
+public class Account implements Comparable<Account>{
+    private String accountNumber;
+    private double balance;
+    private String customerId;
+
+    // Constructor
+    public Account(String accountNumber, double balance, String customerId) {
+        this.accountNumber = accountNumber;
+        this.balance = balance;
+        this.customerId = customerId;
+    }
+
+    // Getters
+    public String getAccountNumber() {
+                return accountNumber;
+    }
+
+    public double getBalance() {
+        return balance;
+    }
+
+    public String getCustomerId() {
+        return customerId;
+    }
+
+    // Setters
+    public void setAccountNumber(String accountNumber) {
+        this.accountNumber = accountNumber;
+    }
+
+    public void setBalance(double balance) {
+        this.balance = balance;
+    }
+
+    public void setCustomerId(String customerId) {
+        this.customerId = customerId;
+    }
+
+    @Override
+    public int compareTo(Account arg0) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'compareTo'");
+    }
+
+    // Additional functionality methods can be added here.
+    // Example: deposit, withdraw, etc.
+}
+ 
+    
+
+import java.util.*;
+
+public interface AdministratorDAOInterface {
+    void addAdministrator(Administrator administrator);
+    Administrator getAdministrator(String staffId);
+    void updateAdministrator(Administrator administrator);
+    void deleteAdministrator(String staffId);
+    List<Administrator> getAllAdministrators();
+}
+
+
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+
+public class AdministratorDAO implements AdministratorDAOInterface {
+    private Connection getConnection() throws SQLException {
+        // Replace these with your actual database connection details
+        String url = "jdbc:mysql://localhost:3306/your_database_name";
+        String user = "your_username";
+        String password = "your_password";
+        return DriverManager.getConnection(url, user, password);
+    }
+
+    @Override
+    public void addAdministrator(Administrator administrator) {
+        String sql = "INSERT INTO administrators (staffId, name) VALUES (?, ?)";
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, administrator.getStaffId());
+            pstmt.setString(2, administrator.getName());
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public Administrator getAdministrator(String staffId) {
+        String sql = "SELECT * FROM administrators WHERE staffId = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, staffId);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                return new Administrator(
+                        rs.getString("staffId"),
+                        rs.getString("name"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
+    public void updateAdministrator(Administrator administrator) {
+        String sql = "UPDATE administrators SET name = ? WHERE staffId = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, administrator.getName());
+            pstmt.setString(2, administrator.getStaffId());
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void deleteAdministrator(String staffId) {
+        String sql = "DELETE FROM administrators WHERE staffId = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, staffId);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public List<Administrator> getAllAdministrators() {
+        List<Administrator> administrators = new ArrayList<>();
+        String sql = "SELECT * FROM administrators";
+        try (Connection conn = getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+            while (rs.next()) {
+                administrators.add(new Administrator(
+                        rs.getString("staffId"),
+                        rs.getString("name")));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return administrators;
+    }
+}
+public class Administrator implements Comparable<Administrator>{
+    private String staffId;
+    private String name;
+
+    // Constructor
+    public Administrator(String staffId, String name) {
+        this.staffId = staffId;
+        this.name = name;
+    }
+
+    // Getters and Setters
+    public String getStaffId() {
+        return staffId;
+    }
+
+    public void setStaffId(String staffId) {
+        this.staffId = staffId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+//toString() method
+  
+  
+    @Override
+    public String toString() {
+        return "Administrator{" +
+                "staffId='" + staffId + '\'' +
+                ", name='" + name + '\'' +
+                '}';
+    }
+
+    @Override
+    public int compareTo(Administrator arg0) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'compareTo'");
+    }
+    
+  // Methods for account and system management
+}
+import java.util.*;
+
+public interface CustomerDAOInterface {
+    void addCustomer(Customer customer);
+    Customer getCustomer(String customerId);
+    void updateCustomer(Customer customer);
+    void deleteCustomer(String customerId);
+    List<Customer> getAllCustomers();
+}
+
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+
+public class CustomerDAO implements CustomerDAOInterface {
+    private Connection getConnection() throws SQLException {
+        // Replace these with your actual database connection details
+        String url = "jdbc:mysql://localhost:3306/mydatabase";
+        String user = "bankapp";
+        String password = "password";
+        return DriverManager.getConnection(url, user, password);
+    }
+
+    @Override
+    public void addCustomer(Customer customer) {
+        String sql = "INSERT INTO customers (customerId, name, accountNumber, balance) VALUES (?, ?, ?, ?)";
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, customer.getCustomerId());
+            pstmt.setString(2, customer.getName());
+            pstmt.setString(3, customer.getAccountNumber());
+            pstmt.setDouble(4, customer.getBalance());
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public Customer getCustomer(String customerId) {
+        String sql = "SELECT * FROM customers WHERE customerId = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, customerId);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                return new Customer(
+                        rs.getString("customerId"),
+                        rs.getString("name"),
+                        rs.getString("accountNumber"),
+                        rs.getDouble("balance"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
+    public void updateCustomer(Customer customer) {
+        String sql = "UPDATE customers SET name = ?, accountNumber = ?, balance = ? WHERE customerId = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, customer.getName());
+            pstmt.setString(2, customer.getAccountNumber());
+            pstmt.setDouble(3, customer.getBalance());
+            pstmt.setString(4, customer.getCustomerId());
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void deleteCustomer(String customerId) {
+        String sql = "DELETE FROM customers WHERE customerId = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, customerId);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public List<Customer> getAllCustomers() {
+        List<Customer> customers = new ArrayList<>();
+        String sql = "SELECT * FROM customers";
+        try (Connection conn = getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+            while (rs.next()) {
+                customers.add(new Customer(
+                        rs.getString("customerId"),
+                        rs.getString("name"),
+                        rs.getString("accountNumber"),
+                        rs.getDouble("balance")));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return customers;
+    }
+}
+public class Customer implements Comparable<Customer>{
+  private String customerId;
+  private String name;
+  private String accountNumber;
+  private double balance;
+
+
+  public Customer() {
+    // Constructor body can be empty
+}
+  // Constructor
+  public Customer(String customerId, String name, String accountNumber, double balance) {
+    this.customerId = customerId;
+    this.name = name;
+    this.accountNumber = accountNumber;
+    this.balance = balance;
+  }
+
+
+  @Override
+  public int compareTo(Customer other) {
+      return Double.compare(other.balance, this.balance);
+  }
+
+  // Getters and Setters
+  public String getCustomerId() {
+    return customerId;
+  }
+
+  public void setCustomerId(String customerId) {
+    this.customerId = customerId;
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
+  }
+
+  public String getAccountNumber() {
+    return accountNumber;
+  }
+
+  public void setAccountNumber(String accountNumber) {
+    this.accountNumber = accountNumber;
+  }
+
+  public double getBalance() {
+    return balance;
+  }
+
+  public void setBalance(double balance) {
+    this.balance = balance;
+  }
+  // toString method
+  @Override
+  public String toString() {
+      return " Customer  {" +
+              "customerId='" + customerId + '\'' +
+              ", name='" + name + '\'' +
+              ", accountNumber='" + accountNumber + '\'' +
+              ", balance=" + balance +
+              '}' + "\n" ;
+  }
+
+
+  // Additional methods to manipulate the account
+}
+//package jsondemo;
+
+import java.io.*;
+import java.net.*;
+import java.util.List;
+import java.util.Iterator;
+
+import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.core.*;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import javax.json.stream.*;
+import javax.json.JsonReader;
+import javax.json.JsonObject;
+import javax.json.JsonArray;
+import javax.json.Json;
+
+
+/*
+ * Modified to work with Customer objects instead of Employee objects
+ */
+public class JSONDemo {
+
+    static ObjectMapper objectMapper = null;
+
+    // Sample JSON strings adjusted for Customer attributes
+    static String jsonCustomerString = "{ \"customerId\" : \"C001\", \"name\" : \"John Doe\", \"accountNumber\" : \"123456789\", \"balance\" : 1000.00 }";
+    static String jsonCustomersString = "[{ \"customerId\" : \"C002\", \"name\" : \"Jane Doe\", \"accountNumber\" : \"987654321\", \"balance\" : 1500.00 }, { \"customerId\" : \"C003\", \"name\" : \"Jim Beam\", \"accountNumber\" : \"192837465\", \"balance\" : 2000.00 }]";
+
+    public static void main(String[] args) {
+
+        objectMapper = new ObjectMapper();
+        
+        System.out.println("\nCreating Customer object");
+        
+        // Create Customer object
+        Customer customer = new Customer("C004", "Paul Newman", "123123123", 2500.00);
+        String customerString = ""; 
+        
+        // Create string version of the customer object
+        try {
+            customerString = objectMapper.writeValueAsString(customer);
+        } catch (JsonProcessingException jpe) {
+            System.out.println(jpe.getMessage());
+        }
+        
+        System.out.println("\nJSON String version of Customer object\n" + customerString);
+        
+        // Read in customer strings as json tree
+        try {
+            JsonNode jsonNode1 = objectMapper.readTree(jsonCustomerString);
+            JsonNode jsonNode2 = objectMapper.readTree(jsonCustomersString);
+
+            // Printing single Customer detail
+            System.out.println("\nSingle Customer Detail JSON String:");
+            System.out.println(jsonNode1.toPrettyString());
+
+            // Printing multiple Customer details
+            System.out.println("\nMultiple Customer Detail JSON String:");
+            System.out.println(jsonNode2.toPrettyString());
+            
+            System.out.println("\nNow printing each customer detail: ");
+            Iterator<JsonNode> it = jsonNode2.elements();
+            while(it.hasNext()) {
+                JsonNode jNode = it.next();
+                System.out.println("\nCustomerId: " + jNode.get("customerId").asText());
+                System.out.println("Name: " + jNode.get("name").asText());
+                System.out.println("AccountNumber: " + jNode.get("accountNumber").asText());
+                System.out.println("Balance: " + jNode.get("balance").asDouble());
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
+        // Working with Customer Objects (methods to be implemented similar to Employee example)
+        readJsonCustomer();
+        readJsonCustomers();
+    }
+    
+    public static void readJsonCustomer() {
+        Customer customerObj = null;
+    
+        try {
+            // Deserialize JSON string to Customer object
+            customerObj = objectMapper.readValue(jsonCustomerString, Customer.class);
+        } catch (JsonProcessingException jpe) {
+            System.out.println(jpe.getMessage());
+        }
+    
+        // Display data from the Customer object created from the JSON String
+        System.out.println("\nReading data from JSON String of single customer:");
+        if (customerObj != null) {
+            System.out.println("CustomerId: " + customerObj.getCustomerId());
+            System.out.println("Name: " + customerObj.getName());
+            System.out.println("AccountNumber: " + customerObj.getAccountNumber());
+            System.out.println("Balance: " + customerObj.getBalance());
+        }
+    }
+    
+    public static void readJsonCustomers() {
+        List<Customer> customerList = null;
+    
+        try {
+            // Deserialize JSON string to a list of Customer objects
+            customerList = objectMapper.readValue(jsonCustomersString, new TypeReference<List<Customer>>(){});
+        } catch (JsonProcessingException jpe) {
+            System.out.println(jpe.getMessage());
+        }
+    
+        System.out.println("\nReading data from JSON array of multiple customers:");
+    
+        if (customerList != null) {
+            for (Customer customer : customerList) {
+                System.out.println("CustomerId: " + customer.getCustomerId());
+                System.out.println("Name: " + customer.getName());
+                System.out.println("AccountNumber: " + customer.getAccountNumber());
+                System.out.println("Balance: " + customer.getBalance() + "\n");
+            }
+        }
+    }
+    
+}
+public class LinkedList<E> {
+  protected Node<E> head; // Make head protected to allow subclass access
+
+  protected static class Node<E> { // Make Node and its members accessible to subclasses
+      protected E data;
+      protected Node<E> next;
+
+      protected Node(E data) { // Protected constructor
+          this.data = data;
+          this.next = null;
+      }
+
+      public E getData() { // Public getter for data
+          return data;
+      }
+
+      public Node<E> getNext() { // Public getter for next
+          return next;
+      }
+
+      public void setNext(Node<E> next) { // Public setter for next
+          this.next = next;
+      }
+  }
+
+  public LinkedList() {
+      this.head = null;
+  }
+
+  protected Node<E> getHead() { // Protected getter for head
+      return head;
+  }
+
+  protected void setHead(Node<E> head) { // Protected setter for head
+      this.head = head;
+  }
+
+  // Other LinkedList methods as previously defined
+  // (add, get, printList etc., unchanged, assuming they don't need direct Node access modification)}
+
+  // Define a get(int) method inside the LinkedList class
+  public E get(int index) {
+    Node<E> current = head;
+    int count = 0;
+
+    while (current != null) {
+      if (count == index) {
+        return current.data;
+      }
+      count++;
+      current = current.next;
+    }
+
+    // Handle index out of bounds
+    throw new IndexOutOfBoundsException("Index " + index + " out of bounds.");
+  }
+
+  public void printList() {
+    Node<E> iterator = head;
+    while (iterator != null) {
+      System.out.print(iterator.data.toString() + " ");
+      iterator = iterator.next;
+    }
+    System.out.println();
+  }
+}
+public class LinkedPriorityQueue<E extends Comparable<E>> extends LinkedList<E> implements PriorityQueueInterface<E> {
+    @Override
+    public void add(E data) {
+        if (getHead() == null || getHead().getData().compareTo(data) > 0) {
+            Node<E> newNode = new Node<>(data);
+            newNode.setNext(getHead());
+            setHead(newNode);
+        } else {
+            Node<E> current = getHead();
+            while (current.getNext() != null && current.getNext().getData().compareTo(data) < 0) {
+                current = current.getNext();
+            }
+
+            Node<E> newNode = new Node<>(data);
+            newNode.setNext(current.getNext());
+            current.setNext(newNode);
+        }
+    }
+
+    @Override
+    public E peek() {
+        if (getHead() == null) return null;
+        return getHead().getData();
+    }
+
+    @Override
+    public E poll() {
+        if (getHead() == null) return null;
+        E data = getHead().getData();
+        setHead(getHead().getNext());
+        return data;
+    }
+
+    // The get(int index) and printList() methods are inherited from LinkedList and remain unchanged.
+}
+public interface PriorityQueueInterface<E> {
+    // Inserts the specified element into this priority queue.
+    void add(E e);
+
+    // Retrieves, but does not remove, the head of this queue, or returns null if this queue is empty.
+    E peek();
+
+    // Retrieves and removes the head of this queue, or returns null if this queue is empty.
+    E poll();
+
+    // Returns the element at the specified position in this list.
+    E get(int index);
+
+    // Prints all elements in this list to the console.
+    void printList();
+}
+    public class PriorQueueTest {
+        public static void main(String[] args) {
+            LinkedPriorityQueue<Customer> queue = new LinkedPriorityQueue<>();
+            LinkedPriorityQueue<Administrator> queueAdmin = new LinkedPriorityQueue<>();
+            // Adding customers to the queue
+            queue.add(new Customer("C001", "Alice", "ACC123", 1500.00));
+            queue.add(new Customer("C002", "Bob", "ACC456", 1200.00));
+            queue.add(new Customer("C003", "Charlie", "ACC789", 1800.00));
+            queue.add(new Customer("C004", "Dana", "ACC101", 1300.00));
+            //adding admin to the queue
+            queueAdmin.add(new Administrator("999999", "ben"));
+            // Printing all customers in priority order
+            System.out.println("All customers in priority queue:");
+            queue.printList();
+            System.out.println("admin info:\n");
+            queueAdmin.printList();
+
+
+
+            
+            // Peeking at the customer with the highest priority
+            System.out.println("\nCustomer with highest priority (peek): " + queue.peek());
+    
+            // Polling customers (retrieving and removing)
+            System.out.println("\nPolling customers:");
+            Customer polledCustomer;
+            while ((polledCustomer = queue.poll()) != null) {
+                System.out.println(polledCustomer);
+            }
+    
+            // Trying to peek and poll from an empty queue
+            System.out.println("\nPeeking after all customers have been polled: " + queue.peek());
+            System.out.println("Polling from empty queue: " + queue.poll());
+        }
+    
+    
+    
+}
+import java.util.*;
+public interface SecurityDAOInterface {
+    void addSecurity(Security security);
+    Security getSecurity(String securityId);
+    void updateSecurity(Security security);
+    void deleteSecurity(String securityId);
+    List<Security> getAllSecurities();
+}
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+
+public class SecurityDAO implements SecurityDAOInterface {
+    private Connection getConnection() throws SQLException {
+        // Replace these with your actual database connection details
+        String url = "jdbc:mysql://localhost:3306/mydatabase";
+        String user = "bankapp";
+        String password = "password";
+        return DriverManager.getConnection(url, user, password);
+    }
+
+    @Override
+    public void addSecurity(Security security) {
+        String sql = "INSERT INTO securities (securityId, name, level) VALUES (?, ?, ?)";
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, security.getSecurityId());
+            pstmt.setString(2, security.getName());
+            pstmt.setString(3, security.getLevel());
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public Security getSecurity(String securityId) {
+        String sql = "SELECT * FROM securities WHERE securityId = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, securityId);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                return new Security(
+                        rs.getString("securityId"),
+                        rs.getString("name"),
+                        rs.getString("level"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
+    public void updateSecurity(Security security) {
+        String sql = "UPDATE securities SET name = ?, level = ? WHERE securityId = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, security.getName());
+            pstmt.setString(2, security.getLevel());
+            pstmt.setString(3, security.getSecurityId());
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void deleteSecurity(String securityId) {
+        String sql = "DELETE FROM securities WHERE securityId = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, securityId);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public List<Security> getAllSecurities() {
+        List<Security> securities = new ArrayList<>();
+        String sql = "SELECT * FROM securities";
+        try (Connection conn = getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+            while (rs.next()) {
+                securities.add(new Security(
+                        rs.getString("securityId"),
+                        rs.getString("name"),
+                        rs.getString("level")));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return securities;
+    }
+}
+
+public class Security implements Comparable<Security>{
+    private String securityId;
+    private String name;
+    private String level; //  represent clearance level for other accounts
+
+    // Constructors
+    public Security() {
+
+    }
+
+    public Security(String securityId, String name, String level) {
+        this.securityId = securityId;
+        this.name = name;
+        this.level = level;
+    }
+
+    // Getters and setters
+    public String getSecurityId() {
+        return securityId;
+    }
+
+    public void setSecurityId(String securityId) {
+        this.securityId = securityId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getLevel() {
+        return level;
+    }
+
+    public void setLevel(String level) {
+        this.level = level;
+    }
+
+    @Override
+    public int compareTo(Security arg0) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'compareTo'");
+    }
+}
+
+import java.util.*;
+
+public interface TellerDAOInterface {
+    void addTeller(Teller teller);
+    Teller getTeller(String tellerId);
+    void updateTeller(Teller teller);
+    void deleteTeller(String tellerId);
+    List<Teller> getAllTellers();
+}
+
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+
+public class TellerDAO implements TellerDAOInterface {
+    private Connection getConnection() throws SQLException {
+        // Replace these with your actual database connection details
+        String url = "jdbc:mysql://localhost:3306/mydatabase";
+        String user = "bankapp";
+        String password = "password";
+        return DriverManager.getConnection(url, user, password);
+    }
+
+
+    @Override
+    public void addTeller(Teller teller) {
+        String sql = "INSERT INTO tellers (tellerId, name, branchId) VALUES (?, ?, ?)";
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, teller.getTellerId());
+            pstmt.setString(2, teller.getName());
+            pstmt.setString(3, teller.getBranchId());
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public Teller getTeller(String tellerId) {
+        String sql = "SELECT * FROM tellers WHERE tellerId = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, tellerId);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                return new Teller(
+                        rs.getString("tellerId"),
+                        rs.getString("name"),
+                        rs.getString("branchId"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
+    public void updateTeller(Teller teller) {
+        String sql = "UPDATE tellers SET name = ?, branchId = ? WHERE tellerId = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, teller.getName());
+            pstmt.setString(2, teller.getBranchId());
+            pstmt.setString(3, teller.getTellerId());
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void deleteTeller(String tellerId) {
+        String sql = "DELETE FROM tellers WHERE tellerId = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, tellerId);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public List<Teller> getAllTellers() {
+        List<Teller> tellers = new ArrayList<>();
+        String sql = "SELECT * FROM tellers";
+        try (Connection conn = getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+            while (rs.next()) {
+                tellers.add(new Teller(
+                        rs.getString("tellerId"),
+                        rs.getString("name"),
+                        rs.getString("branchId")));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return tellers;
+    }
+}
+public class Teller implements Comparable<Teller>{
+    private String tellerId;
+    private String name;
+    private String branchId;
+
+    // Constructors
+    public Teller() {
+        
+    }
+
+    public Teller(String tellerId, String name, String branchId) {
+        this.tellerId = tellerId;
+        this.name = name;
+        this.branchId = branchId;
+    }
+
+    // Getters and setters
+    public String getTellerId() {
+        return tellerId;
+    }
+
+    public void setTellerId(String tellerId) {
+        this.tellerId = tellerId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getBranchId() {
+        return branchId;
+    }
+
+    public void setBranchId(String branchId) {
+        this.branchId = branchId;
+    }
+
+    @Override
+    public int compareTo(Teller arg0) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'compareTo'");
+    }
+}
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.ResultSet;
+import java.sql.Statement;
+
+public class test_sql {
+    public static void main(String[] args) {
+        testConnection();
+        getDBInfo();
+        //showDatabaseContents();
+    }
+
+    public static void showDatabaseContents() {
+        // Connection URL syntax: "jdbc:sqlserver://[serverName[\instanceName][:portNumber]][;property=value[;property=value]]"
+        String connectionUrl = "jdbc:mysql://localhost:3306/mydatabase?user=bankapp&password=password";
+        //"jdbc:mysql://localhost:3306/mydatabase?user=bankapp&password=password";
+        // SQL query to retrieve data
+        String SQL = "SELECT * FROM Employee";
+        
+        // Try-with-resources to ensure closing resources
+        try (Connection conn = DriverManager.getConnection(connectionUrl);
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(SQL)) {
+
+            System.out.println("ID | Name | Position");
+            while (rs.next()) {
+                // Assuming columns are id (int), name (String), position (String)
+                System.out.println(rs.getInt("id") + " | " + rs.getString("name") + " | " + rs.getString("position"));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void testConnection(){
+// Database URL, username and password
+        String url = "jdbc:mysql://localhost:3306/mydatabase";
+        String user = "bankapp";
+        String password = "password";
+
+        // Load and register the JDBC driver
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+        } catch (ClassNotFoundException e) {
+            System.out.println("MySQL JDBC driver not found.");
+            e.printStackTrace();
+            return;
+        }
+
+        // Attempt to connect to the database
+        try (Connection conn = DriverManager.getConnection(url, user, password)) {
+            if (conn != null) {
+                System.out.println("Connected to the database successfully!");
+            } else {
+                System.out.println("Failed to make connection!");
+            }
+        } catch (SQLException e) {
+            System.out.println("SQL Exception: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+    }
+    
+
+        public static void getDBInfo() {
+            String url = "jdbc:mysql://localhost:3306/?useSSL=false"; // Adjust the URL to your database server
+            String user = "bankapp"; // Your database username
+            String password = "password"; // Your database password
+    
+            try {
+                // Establish connection to the database
+                Connection conn = DriverManager.getConnection(url, user, password);
+    
+                // Create a statement
+                Statement stmt = conn.createStatement();
+    
+                // Execute SQL command
+                String sql = "SHOW DATABASES";
+                ResultSet rs = stmt.executeQuery(sql);
+    
+                // Process the result set
+                while (rs.next()) {
+                    String databaseName = rs.getString("Database");
+                    System.out.println(databaseName);
+                }
+    
+                // Close the resources
+                rs.close();
+                stmt.close();
+                conn.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    
+     
+
+    
+}
+import java.util.*;
+
+public interface TransactionDAOInterface {
+    void addTransaction(Transaction transaction);
+    Transaction getTransaction(String transactionId);
+    void updateTransaction(Transaction transaction);
+    void deleteTransaction(String transactionId);
+    List<Transaction> getAllTransactions();
+}
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+
+public class TransactionDAO implements TransactionDAOInterface {
+
+    private Connection getConnection() throws SQLException {
+        // Replace these with your actual database connection details
+        String url = "jdbc:mysql://localhost:3306/mydatabase";
+        String user = "bankapp";
+        String password = "password";
+        return DriverManager.getConnection(url, user, password);
+    }
+
+
+    @Override
+    public void addTransaction(Transaction transaction) {
+        String sql = "INSERT INTO transactions (transactionId, accountNumber, transactionType, amount, timestamp) VALUES (?, ?, ?, ?, ?)";
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, transaction.getTransactionId());
+            pstmt.setString(2, transaction.getAccountNumber());
+            pstmt.setString(3, transaction.getTransactionType());
+            pstmt.setDouble(4, transaction.getAmount());
+            pstmt.setTimestamp(5, new Timestamp(transaction.getTimestamp().getTime()));
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public Transaction getTransaction(String transactionId) {
+        String sql = "SELECT * FROM transactions WHERE transactionId = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, transactionId);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                return new Transaction(
+                        rs.getString("transactionId"),
+                        rs.getString("accountNumber"),
+                        rs.getString("transactionType"),
+                        rs.getDouble("amount"),
+                        new java.util.Date(rs.getTimestamp("timestamp").getTime()));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
+    public void updateTransaction(Transaction transaction) {
+        String sql = "UPDATE transactions SET accountNumber = ?, transactionType = ?, amount = ?, timestamp = ? WHERE transactionId = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, transaction.getAccountNumber());
+            pstmt.setString(2, transaction.getTransactionType());
+            pstmt.setDouble(3, transaction.getAmount());
+            pstmt.setTimestamp(4, new Timestamp(transaction.getTimestamp().getTime()));
+            pstmt.setString(5, transaction.getTransactionId());
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void deleteTransaction(String transactionId) {
+        String sql = "DELETE FROM transactions WHERE transactionId = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, transactionId);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public List<Transaction> getAllTransactions() {
+        List<Transaction> transactions = new ArrayList<>();
+        String sql = "SELECT * FROM transactions";
+        try (Connection conn = getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+            while (rs.next()) {
+                transactions.add(new Transaction(
+                        rs.getString("transactionId"),
+                        rs.getString("accountNumber"),
+                        rs.getString("transactionType"),
+                        rs.getDouble("amount"),
+                        new java.util.Date(rs.getTimestamp("timestamp").getTime())));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return transactions;
+    }
+}
+import java.util.Date;
+
+public class Transaction {
+    private String transactionId;
+    private String accountNumber;
+    private String transactionType; // e.g., "DEPOSIT", "WITHDRAWAL"
+    private double amount;
+    private Date timestamp;
+
+    // Constructor
+    public Transaction(String transactionId, String accountNumber, String transactionType, double amount, Date timestamp) {
+        this.transactionId = transactionId;
+        this.accountNumber = accountNumber;
+        this.transactionType = transactionType;
+        this.amount = amount;
+        this.timestamp = timestamp;
+    }
+
+    // Getters
+    public String getTransactionId() {
+        return transactionId;
+    }
+
+    public String getAccountNumber() {
+        return accountNumber;
+    }
+
+    public String getTransactionType() {
+        return transactionType;
+    }
+
+    public double getAmount() {
+        return amount;
+    }
+
+    public Date getTimestamp() {
+        return timestamp;
+    }
+
+    // Setters
+    public void setTransactionId(String transactionId) {
+        this.transactionId = transactionId;
+    }
+
+    public void setAccountNumber(String accountNumber) {
+        this.accountNumber = accountNumber;
+    }
+
+    public void setTransactionType(String transactionType) {
+        this.transactionType = transactionType;
+    }
+
+    public void setAmount(double amount) {
+        this.amount = amount;
+    }
+
+    public void setTimestamp(Date timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    // Additional functionality methods can be added here.
+    // Example: processTransaction, validateTransaction, etc.
+}

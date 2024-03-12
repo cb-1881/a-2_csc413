@@ -31,6 +31,10 @@ tests:
 	javac -cp dep/junit-4.12.jar:dep/hamcrest-core-1.3.jar: src/Teller.java src/TellerTest.java src/Security.java src/SecurityTest.java
 	java -cp dep/junit-4.12.jar:dep/hamcrest-core-1.3.jar:dep/mysql-connector-j-8.3.0.jar:dep/javax.json-api-1.1.4.jar:dep/jackson-core-2.16.1.jar:dep/jackson-databind-2.16.1.jar:dep/jackson-annotations-2.16.1.jar:src TellerTest
  
+DropTables:
+	java -cp dep/junit-4.12.jar:dep/hamcrest-core-1.3.jar:dep/mysql-connector-j-8.3.0.jar:dep/javax.json-api-1.1.4.jar:dep/jackson-core-2.16.1.jar:dep/jackson-databind-2.16.1.jar:dep/jackson-annotations-2.16.1.jar:src DropTables
+sqlSetup:
+	java -cp dep/junit-4.12.jar:dep/hamcrest-core-1.3.jar:dep/mysql-connector-j-8.3.0.jar:dep/javax.json-api-1.1.4.jar:dep/jackson-core-2.16.1.jar:dep/jackson-databind-2.16.1.jar:dep/jackson-annotations-2.16.1.jar:src DatabaseSetup
 
 
 sql:

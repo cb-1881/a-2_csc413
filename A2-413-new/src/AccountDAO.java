@@ -8,29 +8,20 @@ import java.util.List;
 
 public class AccountDAO implements AccountDAOInterface {
 
-    private String jdbcURL = "jdbc:mysql://localhost:3306/mydatabase";
-    private String jdbcUsername = "bankapp";
-    private String jdbcPassword = "password";
-
+  
+   //not used
     private static final String INSERT_ACCOUNTS_SQL = "INSERT INTO accounts (accountNumber, balance, customerId) VALUES (?, ?, ?);";
     private static final String SELECT_ACCOUNT_BY_ID = "SELECT accountNumber, balance, customerId FROM accounts WHERE accountNumber =?";
     private static final String SELECT_ALL_ACCOUNTS = "SELECT * FROM accounts";
     private static final String DELETE_ACCOUNTS_SQL = "DELETE FROM accounts WHERE accountNumber = ?;";
     private static final String UPDATE_ACCOUNTS_SQL = "UPDATE accounts SET balance = ?, customerId = ? WHERE accountNumber = ?;";
 
-    protected Connection getConnection() {
-        Connection connection = null;
-        try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            connection = DriverManager.getConnection(jdbcURL, jdbcUsername, jdbcPassword);
-        } catch (SQLException e) {
-            // Handle SQL exception
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            // Handle class not found exception
-            e.printStackTrace();
-        }
-        return connection;
+    private Connection getConnection() throws SQLException {
+        // Replace these with your actual database connection details
+        String url = "jdbc:mysql://localhost:3306/mydatabase";
+        String user = "bankapp";
+        String password = "password";
+        return DriverManager.getConnection(url, user, password);
     }
 
     @Override
