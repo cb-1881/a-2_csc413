@@ -1,3 +1,0 @@
-CREATE USER 'bankapp'@'localhost' IDENTIFIED BY 'password';
-GRANT ALL PRIVILEGES ON mydatabase.* TO 'bankapp'@'localhost';
-FLUSH PRIVILEGES;
